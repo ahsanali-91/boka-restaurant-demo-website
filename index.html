@@ -69,10 +69,22 @@
   .nav-links a:hover::after{ width:100%; }
   .nav-cta{ display:none; }
   @media(min-width:860px){ .nav-cta{ display:inline-flex; padding:11px 22px; } }
-  .nav-menu-toggle{ display:flex; flex-direction:column; gap:5px; width:26px; }
-  .nav-menu-toggle span{ height:1.5px; background:var(--parchment); display:block; }
+  .nav-menu-toggle{ display:flex; flex-direction:column; gap:5px; width:26px; z-index:110; position:relative; }
+  .nav-menu-toggle span{ height:1.5px; background:var(--parchment); display:block; transition:transform .3s ease, opacity .3s ease; transform-origin:center; }
+  .nav-menu-toggle.open span:nth-child(1){ transform:translateY(6.5px) rotate(45deg); }
+  .nav-menu-toggle.open span:nth-child(2){ opacity:0; }
+  .nav-menu-toggle.open span:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg); }
   @media(min-width:860px){ .nav-menu-toggle{ display:none; } }
-  @media(max-width:859px){ .nav-links{ display:none; } }
+  @media(max-width:859px){
+    .nav-links{ display:none; }
+    .nav-links.mobile-open{
+      display:flex; flex-direction:column; align-items:flex-start; gap:0;
+      position:absolute; top:100%; left:0; right:0; background:rgba(23,19,15,.97); backdrop-filter:blur(8px);
+      padding:8px 32px 24px; box-shadow:0 16px 30px -12px rgba(0,0,0,.5);
+    }
+    .nav-links.mobile-open a{ width:100%; padding:14px 0; border-bottom:1px solid rgba(239,231,214,.1); font-size:13px; }
+    .nav-links.mobile-open a::after{ display:none; }
+  }
   .scroll-progress{ position:fixed; top:0; left:0; height:3px; width:0%; background:linear-gradient(90deg,var(--ember),var(--gold)); z-index:200; transition:width .08s linear; }
 
   /* HERO / 3D SCENE */
@@ -138,10 +150,14 @@
   .menu-section{ background:var(--ink); color:var(--parchment); }
   .menu-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap; margin-bottom:56px; }
   .menu-head h2{ color:var(--parchment); font-size:clamp(34px,4vw,52px); }
+  .gallery-section .menu-head h2{ color:var(--walnut); }
   .menu-head .eyebrow{ color:var(--gold); }
   .menu-head .eyebrow::before{ background:var(--gold); }
+  .gallery-section .menu-head .eyebrow{ color:var(--ember); }
+  .gallery-section .menu-head .eyebrow::before{ background:var(--ember); }
   .menu-note{ font-family:var(--mono); font-size:12px; color:var(--parchment-2); max-width:30ch; text-align:right; }
   @media(max-width:700px){ .menu-note{ text-align:left; } }
+  .gallery-section .menu-note{ color:var(--walnut-70); }
   .menu-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:0; perspective:1400px; }
   @media(max-width:700px){ .menu-grid{ grid-template-columns:1fr; } }
   .menu-card{ padding:30px 8px; border-bottom:1px solid rgba(239,231,214,.14); display:flex; justify-content:space-between; gap:20px; opacity:0; transform:rotateY(-18deg) translateX(-30px); transform-origin:left center; transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.3,1); }
@@ -284,7 +300,7 @@
 
   <nav class="nav" id="nav">
     <a href="#top" class="brand">Boka <span>Tavernë Tradicionale</span></a>
-    <div class="nav-links">
+    <div class="nav-links" id="navLinks">
       <a href="#story">Story</a>
       <a href="#menu">Menu</a>
       <a href="#gallery">Gallery</a>
@@ -292,7 +308,7 @@
       <a href="#visit">Visit</a>
     </div>
     <a href="#visit" class="btn btn-primary nav-cta">Reserve a Table</a>
-    <button class="nav-menu-toggle" aria-label="menu"><span></span><span></span><span></span></button>
+    <button class="nav-menu-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
   </nav>
   <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -317,7 +333,7 @@
       <h1>Boka</h1>
       <div class="hero-sub">Traditional Albanian cooking, under the vines</div>
       <div class="hero-meta">
-        <span><b>4.7</b> · 261 reviews</span>
+        <span><b>4.7</b> · 267 reviews</span>
         <span>ALL <b>1,000–2,500</b> per person</span>
         <span><span class="live-dot"></span>Open daily <b>7 AM – 12 AM</b></span>
       </div>
@@ -333,7 +349,7 @@
     <div class="ticker-track" id="tickerTrack">
       <span class="ticker-item"><span class="live-dot"></span>Open daily 7 AM – 12 AM</span>
       <span class="ticker-item">★ 4.7 average rating</span>
-      <span class="ticker-item">261 five-star reviews</span>
+      <span class="ticker-item">267 five-star reviews</span>
       <span class="ticker-item">Live music Thu – Sat</span>
       <span class="ticker-item">Terrace seating under the vines</span>
     </div>
@@ -353,7 +369,7 @@
         <p>Every dish on the menu is built from recipes that predate the restaurant itself — passed down, argued over, and perfected one dinner service at a time. Nothing is plated for a photograph; it's plated to be eaten with your hands, shared, and followed by another round of raki.</p>
         <div class="story-figures">
           <div class="fig"><b data-count="4.7" data-decimals="1">0</b><span>Average rating</span></div>
-          <div class="fig"><b data-count="261">0</b><span>Guest reviews</span></div>
+          <div class="fig"><b data-count="267">0</b><span>Guest reviews</span></div>
           <div class="fig"><b>7AM–12AM</b><span>Open daily</span></div>
         </div>
       </div>
@@ -489,7 +505,7 @@
     <div class="wrap">
       <div class="reviews-head reveal">
         <div class="eyebrow" style="justify-content:center">What guests say</div>
-        <h2>261 reviews. One word keeps coming up: <span class="highlight-word">Authentic</span>.</h2>
+        <h2>267 reviews. One word keeps coming up: <span class="highlight-word">Authentic</span>.</h2>
         <div class="rating-line"><span class="stars">★★★★★</span><span class="rating-num">4.7</span></div>
       </div>
       <div class="quotes reveal">
@@ -597,6 +613,24 @@
 
   // Nav + 3D scroll
   const nav = document.getElementById('nav');
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  function closeMobileNav(){
+    navLinks.classList.remove('mobile-open');
+    navToggle.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('mobile-open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileNav));
+  document.addEventListener('click', (e) => {
+    if(navLinks.classList.contains('mobile-open') && !navLinks.contains(e.target) && !navToggle.contains(e.target)){
+      closeMobileNav();
+    }
+  });
   const scene = document.getElementById('scene');
   const layers = document.querySelectorAll('.parallax-layer');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
